@@ -70,6 +70,17 @@ async function deleteComment(id) {
   comments.value = comments?.value.filter((comment) => comment._id !== id);
 }
 
+async function deleteReply(id) {
+  await $fetch(`/api/comments/replies/${id}`, {
+    method: "DELETE",
+  });
+  comments.value = comments.value.map((comment) => {
+    // Filter balasan dengan id yang sesuai
+    comment.replies = comment.replies.filter((reply) => reply._id !== id);
+    return comment;
+  });
+}
+
 async function addReply(id) {
   const response = await $fetch(`/api/comments/replies/${id}`, {
     method: "POST",
@@ -81,6 +92,7 @@ async function addReply(id) {
   const commentedPost = comments.value.find((comment) => comment._id === id);
   // Menambahkan balasan baru ke dalam komentar yang bersangkutan
   commentedPost.replies.push(response);
+  isOpenModal.value = false
   replyAuthor.value = "";
   replyContent.value = "";
 }
@@ -199,13 +211,32 @@ function onClickReply(id) {
               v-for="reply in comment?.replies"
               class="flex flex-col justify-between mb-4"
             >
-              <div class="flex items-center mb-2">
-                <p class="text-sm font-semibold text-gray-900">
-                  {{ reply?.author }}
-                </p>
-                <p class="text-sm text-gray-600 ml-4">
-                  {{ waktuKomentar(reply?.createdAt) }}
-                </p>
+              <div class="flex justify-between">
+                <div class="flex items-center mb-2">
+                  <p class="text-sm font-semibold text-gray-900">
+                    {{ reply?.author }}
+                  </p>
+                  <p class="text-sm text-gray-600 ml-4">
+                    {{ waktuKomentar(reply?.createdAt) }}
+                  </p>
+                </div>
+                <div class="flex items-center">
+                  <button
+                    @click.prevent="deleteReply(reply?._id)"
+                    class="p-4"
+                  >
+                    <svg
+                      class="w-4 h-4 fill-gray-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 448 512"
+                    >
+                      <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                      <path
+                        d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <p class="text-gray-500 dark:text-gray-400">
                 {{ reply?.content }}
