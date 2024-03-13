@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { useDateFormat } from "@vueuse/core";
-
 const props = defineProps(["articleid"]);
 const author = ref("");
 const replyAuthor = ref("");
@@ -8,22 +6,22 @@ const content = ref("");
 const replyContent = ref("");
 const isOpenModal = ref(false);
 const cId = ref("");
-const totalComments = ref(0);
-
 const { data: comments } = useFetch(`/api/comments/article/${props.articleid}`);
 
-let totalCount = 0;
-const commentsArray = comments.value;
-if (Array.isArray(commentsArray)) {
-  for (let i = 0; i < commentsArray.length; i++) {
-    totalCount++; // Menambahkan jumlah komentar
-    const comment = commentsArray[i];
-    if (comment.replies && Array.isArray(comment.replies)) {
-      totalCount += comment.replies.length; // Menambahkan jumlah balasan jika ada
+// menghitung jumlah komentar
+const totalComments = computed(() => {
+  let totalCount = 0;
+  if (Array.isArray(comments.value)) {
+    for (let i = 0; i < comments.value.length; i++) {
+      totalCount++; // Menambahkan jumlah komentar
+      const comment = comments.value[i];
+      if (comment.replies && Array.isArray(comment.replies)) {
+        totalCount += comment.replies.length; // Menambahkan jumlah balasan jika ada
+      }
     }
   }
-}
-totalComments.value = totalCount;
+  return totalCount;
+});
 
 function waktuKomentar(waktuPembuatan) {
   const waktuSekarang = new Date();
@@ -52,7 +50,7 @@ function waktuKomentar(waktuPembuatan) {
 }
 
 async function addComment() {
-  await $fetch("/api/comments", {
+  const response = await $fetch("/api/comments", {
     method: "POST",
     body: {
       author: author.value,
@@ -60,16 +58,31 @@ async function addComment() {
       articleId: props.articleid,
     },
   });
+  comments?.value.push(response);
+  author.value = "";
+  content.value = "";
+}
+
+async function deleteComment(id) {
+  await $fetch(`/api/comments/${id}`, {
+    method: "DELETE",
+  });
+  comments.value = comments?.value.filter((comment) => comment._id !== id);
 }
 
 async function addReply(id) {
-  await $fetch(`/api/comments/replies/${id}`, {
+  const response = await $fetch(`/api/comments/replies/${id}`, {
     method: "POST",
     body: {
       author: replyAuthor.value,
       content: replyContent.value,
     },
   });
+  const commentedPost = comments.value.find((comment) => comment._id === id);
+  // Menambahkan balasan baru ke dalam komentar yang bersangkutan
+  commentedPost.replies.push(response);
+  replyAuthor.value = "";
+  replyContent.value = "";
 }
 
 function onClickReply(id) {
@@ -117,7 +130,7 @@ function onClickReply(id) {
             ></textarea>
           </div>
           <button
-            @click="addComment()"
+            @click.prevent="addComment()"
             type="submit"
             class="w-full items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-primary-800"
           >
@@ -127,20 +140,36 @@ function onClickReply(id) {
       </div>
       <article class="p-6">
         <div v-for="comment in comments" class="flex flex-col justify-between">
-          <div class="flex items-center mb-2">
-            <p class="text-sm font-semibold text-gray-900">
-              {{ comment?.author }}
-            </p>
-            <p class="text-sm text-gray-600 ml-4">
-              {{ waktuKomentar(comment?.createdAt) }}
-            </p>
+          <div class="flex justify-between">
+            <div class="flex items-center mb-2">
+              <p class="text-sm font-semibold text-gray-900">
+                {{ comment?.author }}
+              </p>
+              <p class="text-sm text-gray-600 ml-4">
+                {{ waktuKomentar(comment?.createdAt) }}
+              </p>
+            </div>
+            <div class="flex items-center">
+              <button @click.prevent="deleteComment(comment?._id)" class="p-4">
+                <svg
+                  class="w-4 h-4 fill-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                >
+                  <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                  <path
+                    d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <p class="text-gray-500 dark:text-gray-400">
             {{ comment?.content }}
           </p>
           <div class="flex items-center mt-2 space-x-4">
             <button
-              @click="onClickReply(comment?._id)"
+              @click.prevent="onClickReply(comment?._id)"
               type="button"
               class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
             >
@@ -183,7 +212,7 @@ function onClickReply(id) {
               </p>
               <div class="flex items-center mt-2 space-x-4">
                 <button
-                  @click="onClickReply(comment?._id)"
+                  @click.prevent="onClickReply(comment?._id)"
                   type="button"
                   class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
                 >
