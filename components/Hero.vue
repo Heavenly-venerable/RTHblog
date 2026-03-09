@@ -1,33 +1,29 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+// No props or complex logic needed for now
+</script>
 
 <template>
-  <div>
-    <section
-      class="bg-cover bg-center bg-no-repeat bg-[url('https://th.bing.com/th/id/OIG3..wMqdnJRqiUUcQKSJGwF?pid=ImgGn')] bg-gray-700 bg-blend-multiply"
-    >
-      <div class="px-4 mx-auto max-w-screen-xl text-center py-36 pb-24 lg:py-56">
-        <h1
-          class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl"
-        >
+  <section class="bg-gray-800 mt-14">
+    <div class="px-4 py-16 mx-auto max-w-7xl sm:py-24">
+      <div class="text-center">
+        <h1 class="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
           Belajar Teknologi dengan Mudah dan Menyenangkan
         </h1>
-        <p
-          class="mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48"
-        >
+        
+        <p class="max-w-3xl mx-auto mb-8 text-base text-gray-300 sm:text-lg">
           Temukan berbagai artikel, tutorial, dan tips seputar teknologi yang
           bisa membantu Anda meningkatkan keterampilan, pengetahuan, dan karier
           Anda.
         </p>
-        <div
-          class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0"
-        >
+        
+        <div class="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <NuxtLink
             to="/article"
-            class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+            class="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
           >
             Lihat Artikel Terbaru
             <svg
-              class="w-3.5 h-3.5 ms-2 rtl:rotate-180"
+              class="w-4 h-4 ml-2"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -44,6 +40,6 @@
           </NuxtLink>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>

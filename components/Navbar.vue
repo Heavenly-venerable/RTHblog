@@ -1,49 +1,51 @@
 <script lang="ts" setup>
-const isOpen = ref(false);
-const links = [
+interface Link {
+  name: string;
+  url: string;
+}
+
+const isOpen = ref<boolean>(false);
+const links: Link[] = [
   { name: "Home", url: "/" },
   { name: "Artikel", url: "/article" },
 ];
-function handleClick(e) {
+
+function handleClick(e: MouseEvent): void {
+  const target = e.target as Node;
   const hm = document.querySelector(".hm");
   const navbarNav = document.querySelector(".navbar-nav");
-  if (!hm.contains(e.target) && !navbarNav.contains(e.target)) {
+  
+  if (hm && navbarNav && !hm.contains(target) && !navbarNav.contains(target)) {
     isOpen.value = false;
   }
 }
+
 onMounted(() => {
   document.addEventListener("click", handleClick);
 });
+
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClick);
 });
 </script>
 
 <template>
-  <div>
-    <nav class="bg-[rgba(255,255,255,.9)] border-gray-200 dark:bg-gray-900 fixed top-0 right-0 left-0">
-      <div
-        class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
-      >
-        <RouterLink
-          to="/"
-          class="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <span
-            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            ><span
-              class="bg-clip-text text-transparent bg-gradient-to-b from-blue-700 to-blue-300"
-              >RTH</span
-            >blog
+  <nav class="bg-white border-b border-gray-200 fixed top-0 right-0 left-0 z-50">
+    <div class="px-4 py-3 mx-auto max-w-7xl">
+      <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <NuxtLink to="/" class="flex items-center">
+          <span class="text-xl font-semibold text-gray-900">
+            <span class="text-blue-600">RTH</span>blog
           </span>
-        </RouterLink>
+        </NuxtLink>
+
+        <!-- Mobile menu button -->
         <button
           @click="isOpen = !isOpen"
-          data-collapse-toggle="navbar-default"
           type="button"
-          class="hm inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          aria-controls="navbar-default"
-          aria-expanded="false"
+          class="hm inline-flex items-center justify-center p-2 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          :aria-expanded="isOpen"
         >
           <span class="sr-only">Open main menu</span>
           <svg
@@ -62,26 +64,25 @@ onBeforeUnmount(() => {
             />
           </svg>
         </button>
+
+        <!-- Navigation links -->
         <div
-          class="navbar-nav w-full md:block md:w-auto"
-          :class="{ hidden: !isOpen }"
-          id="navbar-default"
+          class="navbar-nav absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent border-b md:border-0 border-gray-200 md:block"
+          :class="{ 'hidden': !isOpen, 'block': isOpen }"
         >
-          <div
-            class="font-medium flex flex-col items-center p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
-          >
-            <RouterLink
-              :to="url"
-              class="px-4 py-2 hover:underline hover:bg-blue-700 hover:text-white hover:rounded-lg dark:text-white"
+          <div class="flex flex-col md:flex-row md:items-center md:space-x-8 p-4 md:p-0">
+            <NuxtLink
               v-for="{ name, url } in links"
+              :key="name"
+              :to="url"
+              class="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 md:hover:bg-transparent rounded-md transition-colors"
+              @click="isOpen = false"
             >
               {{ name }}
-            </RouterLink>
+            </NuxtLink>
           </div>
         </div>
       </div>
-    </nav>
-  </div>
+    </div>
+  </nav>
 </template>
-
-<style scoped></style>

@@ -1,20 +1,21 @@
 <script lang="ts" setup>
-const showScrollButton = ref(false);
-const scrollTimer = ref();
+const showScrollButton = ref<boolean>(false);
+let scrollTimer: any;
 
-function handleScroll() {
-  clearTimeout(scrollTimer.value);
+function handleScroll(): void {
+  clearTimeout(scrollTimer);
+
   const scrollPosition = window.scrollY || window.pageYOffset;
   showScrollButton.value = scrollPosition > 100;
 
-  if (showScrollButton) {
-    scrollTimer.value = setTimeout(() => {
+  if (showScrollButton.value) {
+    scrollTimer = setTimeout(() => {
       showScrollButton.value = false;
     }, 3000);
   }
 }
 
-function scrollToTop() {
+function scrollToTop(): void {
   window.scrollTo({
     top: 0,
     behavior: "smooth",
@@ -22,33 +23,22 @@ function scrollToTop() {
 }
 
 onMounted(() => {
-  scrollToTop();
   window.addEventListener("scroll", handleScroll);
 });
+
 onBeforeUnmount(() => {
   window.removeEventListener("scroll", handleScroll);
+  clearTimeout(scrollTimer);
 });
 </script>
 
 <template>
-  <div>
-    <div
-      v-if="showScrollButton"
-      @click="scrollToTop()"
-      class="fixed bottom-10 right-6"
-    >
-      <svg
-        class="h-10 w-10 p-2 fill-white rounded-full bg-blue-500 hover:ring hover:ring-blue-700"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 384 512"
-      >
-        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        />
-      </svg>
-    </div>
-  </div>
+  <button v-if="showScrollButton" @click="scrollToTop"
+    class="fixed bottom-6 right-4 z-50 p-3 bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors sm:bottom-8 sm:right-6"
+    aria-label="Scroll to top">
+    <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+  </button>
 </template>
-
-<style scoped></style>

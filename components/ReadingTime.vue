@@ -1,17 +1,20 @@
 <script lang="ts" setup>
-const content = defineProps(["content"]);
-const words = computed(() => {
-  return content?.content.toString().split(/\s+/).length;
+interface Props {
+  content: string;
+}
+
+const props = defineProps<Props>();
+
+const words = computed<number>(() => {
+  if (!props.content) return 0;
+  return props.content.toString().split(/\s+/).length;
 });
-const minutes = computed(() => {
-  return Math.ceil(words.value / 200);
+
+const minutes = computed<number>(() => {
+  return Math.max(1, Math.ceil(words.value / 200));
 });
 </script>
 
 <template>
-  <div>
-    <span class="text-gray-500">{{ minutes }} menit baca</span>
-  </div>
+  <span class="text-sm text-gray-500">{{ minutes }} menit baca</span>
 </template>
-
-<style scoped></style>
