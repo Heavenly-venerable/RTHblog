@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { marked } from "marked";
-import { useDateFormat } from "@vueuse/core";
 import type { BlogPost, Label } from "~/types/blog";
 
 const route = useRoute();
@@ -140,13 +139,13 @@ const hasError = computed(() => !!articleError.value);
           <!-- Author Info -->
           <div class="flex items-center mb-6">
             <img class="w-12 h-12 mr-4 rounded-full sm:w-16 sm:h-16"
-              src="https://th.bing.com/th/id/OIG4.17Cnsp8XeW01koI5EvIm?pid=ImgGn" alt="Hariyanto Saputra" />
+              src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG9jZWFufGVufDB8fDB8fHww" alt="Hariyanto Saputra" />
             <div>
               <h2 class="text-lg font-bold text-gray-900 sm:text-xl">
                 Hariyanto Saputra
               </h2>
               <p class="text-sm text-gray-600">
-                Junior Web Developer
+                Fullstack Web Developer
               </p>
               <p class="text-sm text-gray-500">
                 {{ formattedDate }}

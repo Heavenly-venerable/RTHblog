@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       href: "https://cdn.bootcdn.net/ajax/libs/font-awesome/6.1.0/css/all.min.css",
     },
   ],
-  nitro: {
-    plugins: ["~/server/index.ts"],
-  },
+  runtimeConfig: {
+    databaseUrl: process.env.DATABASE_URL || ""
+  }
 });
