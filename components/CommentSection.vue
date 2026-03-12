@@ -1,5 +1,11 @@
 <script lang="ts" setup>
 import type { Comment, Reply } from "~/types/comment";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id";
+
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 
 interface Props {
   articleId: string;
@@ -54,33 +60,16 @@ const totalComments = computed<number>(() => {
 
 // Format waktu
 const formatTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
+  const date = dayjs(dateString);
+  const now = dayjs();
 
-  const oneMinute = 60 * 1000;
-  const oneHour = oneMinute * 60;
-  const oneDay = oneHour * 24;
-  const oneWeek = oneDay * 7;
+  const diffDays = now.diff(date, "day");
 
-  if (diff < oneMinute) {
-    return "Baru saja";
-  } else if (diff < oneHour) {
-    const minutes = Math.floor(diff / oneMinute);
-    return `${minutes} menit lalu`;
-  } else if (diff < oneDay) {
-    const hours = Math.floor(diff / oneHour);
-    return `${hours} jam lalu`;
-  } else if (diff < oneWeek) {
-    const days = Math.floor(diff / oneDay);
-    return `${days} hari lalu`;
-  } else {
-    return date.toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+  if (diffDays < 7) {
+    return date.fromNow();
   }
+
+  return date.format("D MMM YYYY");
 };
 
 // Add comment
